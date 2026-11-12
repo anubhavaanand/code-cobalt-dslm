@@ -1,0 +1,15 @@
+# Phase 0 (CPU). Everything here runs on a laptop.
+torch>=2.4
+tokenizers>=0.19
+numpy>=1.26
+tqdm>=4.66
+
+# Data download (Phase 0/1). We read parquet row-groups directly rather than
+# going through `datasets` — it holds too much in memory on a small machine.
+huggingface_hub>=0.24
+pyarrow>=15
+
+# Phase 4+ (add later, not needed yet)
+#   transformers   — loading reference models for comparison
+#   gguf           — quantisation
+#   pytest         — the verifier harness (Phase 5)

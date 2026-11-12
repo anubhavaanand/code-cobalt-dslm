@@ -1,0 +1,31 @@
+# Data
+data/
+*.bin
+*.json
+!package.json
+!tsconfig.json
+
+# Checkpoints
+checkpoints/
+*.pt
+*.gguf
+*.safetensors
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Editors / OS
+.directory
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+runs/
+wandb/
+*.log
