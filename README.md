@@ -50,7 +50,7 @@ Real output, 150 training steps, no cherry-picking:
 Grammar: mostly there. Meaning: absent. That gap is what 20 tokens-per-parameter
 of the right data is supposed to close, and it is the entire point of Phases 1–3.
 
-## How it works
+## <img src="assets/ember-high.png" alt="" width="14"> How it works
 
 <img src="assets/pipeline.gif" alt="The Cobalt loop: frontier model, Cobalt, verifier" width="672">
 
@@ -61,25 +61,6 @@ attempt. The model never plans. It executes.
 **Cobalt is a component, not a product.**
 
 ---
-
-## <img src="assets/ember-mid.png" alt="" width="14"> Quick start
-
-On Kaggle — accelerator **GPU T4 ×2**, Internet **on**:
-
-```python
-!git clone https://github.com/anubhavaanand/project-cobalt-dslm cobalt && cd cobalt
-%pip install -q -r requirements.txt
-!python scripts/prepare_data.py --preset kaggle
-!python -m dslm.train --preset kaggle
-!python -m dslm.sample --ckpt checkpoints/latest.pt --prompt "def "
-```
-
-Locally, for tests only:
-
-```bash
-pip install -e ".[dev]"
-pytest -v
-```
 
 ## <img src="assets/ember-dim.png" alt="" width="14"> Presets
 
