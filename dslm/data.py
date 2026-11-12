@@ -51,13 +51,16 @@ class TokenStream:
         return x.to(self.device), y.to(self.device)
 
 
-def bytes_per_token(path: str | Path) -> float:
-    """Diagnostic: compression rate of the tokeniser on this corpus.
+def bytes_per_token(text_path: str | Path, token_path: str | Path) -> float:
+    """Compression rate: source-text bytes per token.
 
-    Values around 4.0+ are healthy for BPE on English text. Code tends to sit
-    lower (3.2-3.8) because identifiers and punctuation fragment.
+    Measure against the *source text*, not the uint16 binary — the binary is
+    2 bytes/token by construction, so dividing by it always returns exactly 2.0
+    and tells you nothing.
+
+    Values around 4.0+ are healthy for BPE on English text. Code sits lower
+    (3.2-3.8) because identifiers and punctuation fragment.
     """
-    path = Path(path)
-    n_tokens = len(np.memmap(path, dtype=np.uint16, mode="r"))
-    n_bytes = path.stat().st_size
+    n_tokens = len(np.memmap(token_path, dtype=np.uint16, mode="r"))
+    n_bytes = Path(text_path).stat().st_size
     return n_bytes / max(1, n_tokens)

@@ -174,10 +174,9 @@ def main() -> None:
     print(f"  {n_val:,} tokens")
 
     # -- 4. report ---------------------------------------------------------- #
-    # Measure compression against the *source text*, not the uint16 binary
-    # (which is 2 bytes/token by construction and would always read 2.00).
-    train_text_bytes = train_txt.stat().st_size
-    bpt = train_text_bytes / max(1, n_train)
+    from dslm.data import bytes_per_token
+
+    bpt = bytes_per_token(train_txt, data_dir / train_cfg.token_file)
     print(f"\ndone. bytes/token = {bpt:.2f}  (healthy is 3.5-4.5 for text)")
     print(f"data in {data_dir}/")
 
