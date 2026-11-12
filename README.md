@@ -1,8 +1,8 @@
 <div align="center">
 
-# Cobalt
+<img src="assets/banner.gif" alt="Cobalt" width="768">
 
-**A domain-specific language model for Python, verified by tests rather than trusted.**
+### A domain-specific language model for Python, verified by tests rather than trusted.
 
 [![tests](https://github.com/anubhavaanand/project-cobalt-dslm/actions/workflows/tests.yml/badge.svg)](https://github.com/anubhavaanand/project-cobalt-dslm/actions)
 [![python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
