@@ -62,6 +62,25 @@ attempt. The model never plans. It executes.
 
 ---
 
+## <img src="assets/ember-mid.png" alt="" width="14"> Running it
+
+There is one supported path: the notebook.
+
+1. Open `notebooks/Cobalt_Phase0.ipynb` on Kaggle
+2. Settings → Accelerator → **GPU T4 ×2**
+3. Settings → Internet → **On**
+4. Set `REPO_URL` to your own fork
+5. Run all
+
+**Training does not happen locally.** The reference machine is a 4-thread CPU
+with no GPU — a run there takes hours and makes it unusable. All training runs on
+Kaggle's free tier.
+
+The notebook clones fresh each session and checkpoints as it goes, so the 9-hour
+session limit costs minutes, not the run.
+
+---
+
 ## <img src="assets/ember-dim.png" alt="" width="14"> Presets
 
 | Preset | Params | Tokens | Time | Purpose |
