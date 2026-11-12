@@ -13,7 +13,7 @@
 
 ---
 
-## <img src="assets/ember-mid.png" alt="" width="14"> The idea
+## <img src="assets/ember.gif" alt="" width="32"> The idea
 
 Frontier models are expensive because they are general. Cobalt asks what happens
 if they don't have to be.
@@ -23,7 +23,7 @@ if they don't have to be.
 
 The answer is probably yes, and the reason is arithmetic.
 
-## <img src="assets/ember-high.png" alt="" width="14"> The math that makes it work
+## <img src="assets/ember.gif" alt="" width="32"> The math that makes it work
 
 If one attempt succeeds with probability `p`, then `n` free retries succeed with
 probability `1 − (1−p)^n`:
@@ -39,7 +39,7 @@ A model with **5% per-attempt accuracy is functionally perfect** given free
 retries. The requirement changes from *"be as good as the frontier"* to *"have a
 non-trivial chance of being right"* — which is a far more achievable target.
 
-## <img src="assets/ember-low.png" alt="" width="14"> What it produces today
+## <img src="assets/ember.gif" alt="" width="32"> What it produces today
 
 Real output, 150 training steps, no cherry-picking:
 
@@ -50,7 +50,7 @@ Real output, 150 training steps, no cherry-picking:
 Grammar: mostly there. Meaning: absent. That gap is what 20 tokens-per-parameter
 of the right data is supposed to close, and it is the entire point of Phases 1–3.
 
-## <img src="assets/ember-high.png" alt="" width="14"> How it works
+## <img src="assets/ember.gif" alt="" width="32"> How it works
 
 <img src="assets/pipeline.gif" alt="The Cobalt loop: frontier model, Cobalt, verifier" width="672">
 
@@ -62,7 +62,7 @@ attempt. The model never plans. It executes.
 
 ---
 
-## <img src="assets/ember-mid.png" alt="" width="14"> Running it
+## <img src="assets/ember.gif" alt="" width="32"> Running it
 
 There is one supported path: the notebook.
 
@@ -81,7 +81,7 @@ session limit costs minutes, not the run.
 
 ---
 
-## <img src="assets/ember-dim.png" alt="" width="14"> Presets
+## <img src="assets/ember.gif" alt="" width="32"> Presets
 
 | Preset | Params | Tokens | Time | Purpose |
 |---|---:|---:|---|---|
@@ -93,7 +93,7 @@ Each preset's token budget is asserted in CI. An earlier version shipped one tha
 was 30× undertrained and would have looked like an architecture failure rather
 than a config error.
 
-## <img src="assets/ember-high.png" alt="" width="14"> Verified
+## <img src="assets/ember.gif" alt="" width="32"> Verified
 
 | Check | Result |
 |---|---|
@@ -104,7 +104,7 @@ than a config error.
 | checkpoint / resume | weights, optimizer state, and step |
 | test suite | 40 passed, CI on 3.11 and 3.12 |
 
-## <img src="assets/ember-dim.png" alt="" width="14"> Layout
+## <img src="assets/ember.gif" alt="" width="32"> Layout
 
 ```
 dslm/
@@ -119,12 +119,12 @@ notebooks/       Cobalt_Phase0.ipynb — 15 cells, runs on Kaggle
 tests/           40 tests
 ```
 
-## <img src="assets/ember-low.png" alt="" width="14"> Status
+## <img src="assets/ember.gif" alt="" width="32"> Status
 
 **Phase 0 — pipeline bring-up.** Verified end to end on Kaggle 2×T4. Not yet
 trained at scale.
 
-## <img src="assets/ember-mid.png" alt="" width="14"> Scope
+## <img src="assets/ember.gif" alt="" width="32"> Scope
 
 Cobalt works when correctness is machine-checkable. It breaks when:
 
@@ -143,7 +143,7 @@ Two constraints from the literature shape the design:
 - **The decomposer must be a frontier model.** Decomposition prompts do not
   generalise across domains (Least-to-Most).
 
-## <img src="assets/ember-dim.png" alt="" width="14"> Prior work
+## <img src="assets/ember.gif" alt="" width="32"> Prior work
 
 The test-input selection idea is structurally close to **CodeT**
 ([arXiv:2207.10397](https://arxiv.org/abs/2207.10397)), which generates programs
@@ -154,7 +154,7 @@ the model's own function *repertoire*. That difference is the contribution and t
 risk — CodeT's assumption that *incorrect solutions rarely agree* is unproven for
 *incorrect functions*.
 
-## <img src="assets/ember-dim.png" alt="" width="14"> Rights
+## <img src="assets/ember.gif" alt="" width="32"> Rights
 
 **Proprietary. All rights reserved.** See [LICENSE](LICENSE).
 
