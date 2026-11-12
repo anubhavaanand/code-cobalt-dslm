@@ -1,8 +1,14 @@
 # Cobalt
 
+[![tests](https://github.com/anubhavaanand/project-cobalt-dslm/actions/workflows/tests.yml/badge.svg)](https://github.com/anubhavaanand/project-cobalt-dslm/actions)
+[![python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+[![license](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
+
 **A domain-specific language model for Python, verified by tests rather than trusted.**
 
-Cobalt is an experiment in a single question:
+---
+
+Cobalt is an experiment in one question:
 
 > If a task is narrow enough to be machine-verifiable, does a small model plus
 > free retries beat an expensive model on cost and latency at comparable quality?
@@ -22,28 +28,54 @@ A model with 5% per-attempt accuracy is functionally perfect given free retries.
 That reframes the requirement from *"be as good as the frontier"* to *"have a
 non-trivial chance of being right"* — a far more achievable target.
 
+## What it sounds like today
+
+Honest output from a 150-step training run on TinyStories. Not good. Not trying
+to be — this is what the pipeline produces before any real training.
+
+> Once upon a time to the when a to her to the! He was so new.
+> " mom was a strange that he was been time. He was very friends
+> were safe!" She was very proud and he was very special.
+
+Grammar: mostly there. Meaning: absent. That gap is exactly what 20 tokens/param
+of the right data is supposed to close.
+
 ## How it works
 
 ```
-frontier model  →  decomposes a task into verifiable subtasks
-                →  writes test cases (the oracle)
-                →  Cobalt drafts code for one subtask
-                →  pytest / mypy / ruff verify
-                →  retry until pass or budget exhausted
+                 ┌──────────────────────────────────────┐
+   task  ──────► │  frontier model                      │
+                 │  - decomposes into verifiable units  │
+                 │  - writes test cases (the oracle)    │
+                 └──────────────────┬───────────────────┘
+                                    │  spec + tests
+                                    ▼
+                 ┌──────────────────────────────────────┐
+                 │  Cobalt  (~100 MB, local, free)      │
+                 │  - drafts one unit                   │
+                 │  - retried ~100x/hour                │
+                 └──────────────────┬───────────────────┘
+                                    │  candidate
+                                    ▼
+                 ┌──────────────────────────────────────┐
+                 │  pytest · mypy · ruff                │
+                 │  accept / reject → drives retry      │
+                 └──────────────────┬───────────────────┘
+                                    │
+                            accepted code
 ```
 
 The model never plans. It executes. **It is a component, not a product.**
 
 ## Status
 
-**Phase 0 — pipeline bring-up.** The pipeline runs and is verified end to end;
-nothing has been trained at scale yet.
+**Phase 0 — pipeline bring-up.** Verified end to end on Kaggle 2×T4. Not yet
+trained at scale.
 
 ## Machine policy
 
 **Training does not happen on the laptop.** The dev machine is a 4-thread i3 with
-no GPU — a training run there takes hours and makes it unusable. All training runs
-on **Kaggle** (free 2×T4, 30 h/week).
+no GPU. All training runs on **Kaggle** (free 2×T4, 30 h/week).
 
 | Task | Where |
 |---|---|
@@ -53,18 +85,24 @@ on **Kaggle** (free 2×T4, 30 h/week).
 | Full-scale data prep | Kaggle |
 | Inference on a finished model | laptop (~20–40 tok/s) |
 
-## Quick start (Kaggle)
+## Quick start
+
+On Kaggle, with accelerator **GPU T4 ×2** and Internet **on**:
 
 ```python
-# Kaggle notebook, accelerator: GPU T4 x2
-!git clone <this-repo> cobalt && cd cobalt
+!git clone https://github.com/anubhavaanand/project-cobalt-dslm cobalt && cd cobalt
 %pip install -q -r requirements.txt
 !python scripts/prepare_data.py --preset kaggle
 !python -m dslm.train --preset kaggle
-!python -m dslm.sample --ckpt checkpoints/latest.pt --prompt "Once upon a time"
+!python -m dslm.sample --ckpt checkpoints/latest.pt --prompt "def "
 ```
 
-The smoke model will not be good. It exists to prove the pipeline connects.
+Or locally, for tests only:
+
+```bash
+pip install -e ".[dev]"
+pytest -v
+```
 
 ## Layout
 
@@ -81,6 +119,7 @@ scripts/
   make_kaggle_notebook.py regenerates the notebook
 notebooks/
   Cobalt_Phase0.ipynb     15 cells, ready to run on Kaggle
+tests/                    40 tests, run in CI on 3.11 and 3.12
 ```
 
 ## Verified working
@@ -90,17 +129,18 @@ notebooks/
 | `smoke` preset | 13.77M params |
 | `base` preset | 122.70M params |
 | forward + backward | finite loss and gradients |
-| tokenizer | trains, round-trips, no OOV |
+| tokenizer | round-trips, no OOV, every byte representable |
 | data prep | 4.27M tokens, 4.20 bytes/token (TinyStories) |
-| train loop | loss 9.11 -> 4.11 on Kaggle T4, checkpoint written |
-| sampling | produces grammatical text |
+| train loop | loss 9.11 → 4.11 on Kaggle T4, ~85,000 tok/s |
+| checkpoint / resume | weights, optimizer state, and step restored |
+| test suite | 40 passed, CI on Python 3.11 and 3.12 |
 
 ## What this is not
 
-- Not a general chatbot. No pretense of broad capability.
-- Not a frontier competitor. That is a compute problem, not an engineering one.
-- Not multi-language. Capacity divided across languages is capacity lost.
-- Not human-facing. The interface is structured specs and test cases.
+- **Not a general chatbot.** No pretense of broad capability.
+- **Not a frontier competitor.** That is a compute problem, not an engineering one.
+- **Not multi-language.** Capacity divided across languages is capacity lost.
+- **Not human-facing.** The interface is structured specs and test cases.
 
 ## The honest scope fence
 
@@ -124,11 +164,13 @@ Two constraints from the literature that shape the design:
 ## Prior work
 
 The test-input selection idea is structurally close to **CodeT** (ICLR 2023,
-arXiv:2207.10397), which generates programs and tests jointly and selects by dual
-execution agreement. The difference: CodeT selects among generated programs;
-Cobalt proposes selecting among the model's own function repertoire. That
-difference is the contribution and the risk — CodeT's assumption that *incorrect
-solutions rarely agree* is unproven for *incorrect functions*.
+[arXiv:2207.10397](https://arxiv.org/abs/2207.10397)), which generates programs
+and tests jointly and selects by dual execution agreement.
+
+The difference: CodeT selects among generated *programs*; Cobalt proposes
+selecting among the model's own function *repertoire*. That difference is the
+contribution and the risk — CodeT's assumption that *incorrect solutions rarely
+agree* is unproven for *incorrect functions*.
 
 ## Rights
 
